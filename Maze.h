@@ -102,7 +102,11 @@ class Maze {
 
 		void	Draw_Cell(Cell* cell, LineSeg left, LineSeg right);
 
-		bool	Clip(LineSeg edge, float* left, float* right);
+		bool	Clip(LineSeg* edge, LineSeg left, LineSeg right);
+
+		/*void	Draw_Cell(Cell* cell, LineSeg left, LineSeg right);*/
+
+		/*bool	Clip(LineSeg edge, float* left, float* right);*/
 
 		// a	Point to 16 consecutive values that are used as the elements 
 		//		of 4 * 4 matrix
