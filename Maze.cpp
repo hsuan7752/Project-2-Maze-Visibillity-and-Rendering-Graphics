@@ -724,6 +724,8 @@ Draw_Cell(Cell* cell, LineSeg left, LineSeg right)
 {
 	cell->bFootPrint = true;
 
+	int index = 0;
+
 	for (int i = 0; i < 4; ++i)
 	{
 		if (cell->edges[i]->opaque)
@@ -778,6 +780,8 @@ Draw_Cell(Cell* cell, LineSeg left, LineSeg right)
 				LineSeg new_left(left.start[0], left.start[1], E->end[0], E->end[1]);
 				LineSeg new_right(right.start[0], right.start[1], E->start[0], E->start[1]);
 
+
+
 				Draw_Cell(cell->edges[i]->Neighbor(cell), new_left, new_right);
 			}
 		}
@@ -829,11 +833,11 @@ Clip(LineSeg* edge, LineSeg left, LineSeg right)
 
 		if (right_edge == Edge::LEFT)
 		{
-			/*if (right_x < edge->start[0] || right_x > edge->end[0])
+			if (right_x < edge->start[0] || right_x > edge->end[0])
 				return false;
 
 			if (right_y < edge->start[1] || right_y > edge->end[1])
-				return false;*/
+				return false;
 
 			if (left.Point_Side(edge->start[0], edge->start[1]) == Edge::LEFT && right.Point_Side(edge->start[0], edge->start[1]) == Edge::RIGHT)
 			{
@@ -876,7 +880,7 @@ Clip(LineSeg* edge, LineSeg left, LineSeg right)
 			}			
 		}
 
-		if (right_edge == Edge::LEFT)
+		/*if (right_edge == Edge::LEFT)
 		{
 			if (left.Point_Side(edge->start[0], edge->start[1]) == Edge::LEFT && right.Point_Side(edge->start[0], edge->start[1]) == Edge::RIGHT)
 			{
@@ -899,7 +903,7 @@ Clip(LineSeg* edge, LineSeg left, LineSeg right)
 
 				return true;
 			}
-		}
+		}*/
 	}
 
 	return false;
