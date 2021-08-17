@@ -775,10 +775,16 @@ Draw_Cell(Cell* cell, LineSeg left, LineSeg right)
 				if (!Clip(E, left, right))
 					continue;
 
-				LineSeg new_left(left.start[0], left.start[1], E->end[0], E->end[1]);
-				LineSeg new_right(right.start[0], right.start[1], E->start[0], E->start[1]);
+				LineSeg a(left.start[0], left.start[1], E->end[0], E->end[1]);
+				LineSeg b(right.start[0], right.start[1], E->start[0], E->start[1]);
 
-				Draw_Cell(cell->edges[i]->Neighbor(cell), new_left, new_right);
+				float cross_product = (a.end[0] - a.start[0]) * (b.end[1] - b.start[1]) - (a.end[1] - a.start[1]) * (b.end[0] - b.start[0]);
+
+				if (cross_product < 0)
+					Draw_Cell(cell->edges[i]->Neighbor(cell), b, a);
+				else
+					Draw_Cell(cell->edges[i]->Neighbor(cell), a, b);	
+				/*Draw_Cell(cell->edges[i]->Neighbor(cell), new_left, new_right);*/
 			}
 		}
 	}
