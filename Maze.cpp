@@ -683,17 +683,17 @@ Draw_View(const float focal_dist)
 	for (int i = 0; i < num_cells; ++i)
 		cells[i]->bFootPrint = false;
 
-	//Draw_Cell(view_cell, 
-	//			LineSeg(viewer_posn[0], viewer_posn[1], 
-	//					viewer_posn[0] + cosf(To_Radians(viewer_dir - viewer_fov / 2)), 
-	//					viewer_posn[1] + sinf(To_Radians(viewer_dir - viewer_fov / 2))), //Left
-	//			LineSeg(viewer_posn[0], viewer_posn[1],
-	//					viewer_posn[0] + cosf(To_Radians(viewer_dir + viewer_fov / 2)),
-	//					viewer_posn[1] + sinf(To_Radians(viewer_dir + viewer_fov / 2)))); //Right
+	Draw_Cell(view_cell, 
+				LineSeg(viewer_posn[0], viewer_posn[1], 
+						viewer_posn[0] + cosf(To_Radians(viewer_dir - viewer_fov / 2)), 
+						viewer_posn[1] + sinf(To_Radians(viewer_dir - viewer_fov / 2))), //Left
+				LineSeg(viewer_posn[0], viewer_posn[1],
+						viewer_posn[0] + cosf(To_Radians(viewer_dir + viewer_fov / 2)),
+						viewer_posn[1] + sinf(To_Radians(viewer_dir + viewer_fov / 2)))); //Right
 
-	Draw_Cell(view_cell,
+	/*Draw_Cell(view_cell,
 		LineSeg(zNear * tan(To_Radians(viewer_fov * 0.5f)), -zNear, zFar * tan(To_Radians(viewer_fov * 0.5f)), -zFar),
-		LineSeg(-zFar * tan(To_Radians(viewer_fov * 0.5f)), -zFar, -zNear * tan(To_Radians(viewer_fov * 0.5f)), -zNear));
+		LineSeg(-zFar * tan(To_Radians(viewer_fov * 0.5f)), -zFar, -zNear * tan(To_Radians(viewer_fov * 0.5f)), -zNear));*/
 
 
 	glMatrixMode(GL_PROJECTION);
@@ -719,283 +719,290 @@ Draw_Wall(const float start[2], const float end[2], const float color[3])
 	glEnd();
 }
 
-//void Maze::
-//Draw_Cell(Cell* cell, LineSeg left, LineSeg right)
-//{
-//	cell->bFootPrint = true;
-//
-//	for (int i = 0; i < 4; ++i)
-//	{
-//		if (cell->edges[i]->opaque)
-//		{
-//			LineSeg* E = new LineSeg(cell->edges[i]);
-//			if (!Clip(E, left, right))
-//				continue;/**/
-//
-//			float* edge0 = new float[4]{ E->start[1], 1.0f, E->start[0], 1.0f };
-//			float* edge1 = new float[4]{ E->end[1], 1.0f, E->end[0], 1.0f };
-//			float* edge2 = new float[4]{ E->end[1], -1.0f, E->end[0], 1.0f };
-//			float* edge3 = new float[4]{ E->start[1], -1.0f, E->start[0], 1.0f };
-//
-//			edge0 = Multiplication(ViewMatrix, edge0);
-//			edge1 = Multiplication(ViewMatrix, edge1);
-//			edge2 = Multiplication(ViewMatrix, edge2);
-//			edge3 = Multiplication(ViewMatrix, edge3);
-//
-//			edge0 = Multiplication(ProjectionMatrix, edge0);
-//			edge1 = Multiplication(ProjectionMatrix, edge1);
-//			edge2 = Multiplication(ProjectionMatrix, edge2);
-//			edge3 = Multiplication(ProjectionMatrix, edge3);
-//
-//			edge0 = Normalize(edge0);
-//			edge1 = Normalize(edge1);
-//			edge2 = Normalize(edge2);
-//			edge3 = Normalize(edge3);
-//
-//			/*if (edge0[3] < 0)
-//				continue;*/
-//
-//			glBegin(GL_POLYGON);
-//			glColor3fv(cell->edges[i]->color);
-//			glVertex2fv(edge0);
-//			glVertex2fv(edge1);
-//			glVertex2fv(edge2);
-//			glVertex2fv(edge3);
-//			glEnd();
-//		}
-//		else
-//		{
-//			if (cell->edges[i]->Neighbor(cell) == NULL)
-//				continue;
-//
-//			if (!(cell->edges[i]->Neighbor(cell)->bFootPrint))
-//			{
-//				LineSeg* E = new LineSeg(cell->edges[i]);
-//
-//				if (!Clip(E, left, right))
-//					continue;
-//
-//				LineSeg new_left(left.start[0], left.start[1], E->end[0], E->end[1]);
-//				LineSeg new_right(right.start[0], right.start[1], E->start[0], E->start[1]);
-//
-//				Draw_Cell(cell->edges[i]->Neighbor(cell), new_left, new_right);
-//			}
-//		}
-//	}
-//}
-
-//bool Maze::
-//Clip(LineSeg* edge, LineSeg left, LineSeg right)
-//{	
-//	float distance_x = (float)edge->end[0] - (float)edge->start[0];
-//	float distance_y = (float)edge->end[1] - (float)edge->start[1];
-//	float left_x, left_y, right_x, right_y ,s;
-//
-//	s = edge->Cross_Param(left);
-//	left_x = edge->start[0] + distance_x * s;
-//	left_y = edge->start[1] + distance_y * s;
-//
-//	s = edge->Cross_Param(right);
-//	right_x = edge->start[0] + distance_x * s;
-//	right_y = edge->start[1] + distance_y * s;
-//
-//	char left_edge = left.Point_Side(right_x, right_y);
-//	char right_edge = right.Point_Side(left_x, left_y);
-//
-//	if (left_edge == LineSeg::LEFT)
-//	{
-//		if (right_edge == LineSeg::RIGHT)
-//		{
-//			if (fminf(left_x, right_x) > edge->end[0] || fmaxf(left_x, right_x) < edge->start[0])
-//				return false;
-//			else if (fminf(left_y, right_y) > edge->end[1] || fmaxf(left_y, right_y) < edge->start[1])
-//				return false;
-//
-//			if (fminf(left_x, right_x) > edge->start[0])
-//				edge->start[0] = fminf(left_x, right_x);
-//
-//			if (fmaxf(left_x, right_x) < edge->end[0])
-//				edge->end[0] = fmaxf(left_x, right_x);
-//
-//			if (fminf(left_y, right_y) > edge->start[1])
-//				edge->start[1] = fminf(left_y, right_y);
-//
-//			if (fmaxf(left_y, right_y) < edge->end[1])
-//				edge->end[1] = fmaxf(left_y, right_y);
-//
-//			return true;
-//		}
-//
-//		if (right_edge == Edge::LEFT)
-//		{
-//			
-//
-//			if (right_x < edge->start[0] || right_x > edge->end[0])
-//				return false;
-//
-//			if (right_y < edge->start[1] || right_y > edge->end[1])
-//				return false;
-//
-//			if (left.Point_Side(edge->start[0], edge->start[1]) == Edge::LEFT && right.Point_Side(edge->start[0], edge->start[1]) == Edge::RIGHT)
-//			{
-//				edge->end[0] = right_x;
-//				edge->end[1] = right_y;
-//			}
-//			else if (left.Point_Side(edge->end[0], edge->end[1]) == Edge::LEFT && right.Point_Side(edge->end[0], edge->end[1]) == Edge::RIGHT)
-//			{
-//				edge->start[0] = right_x;
-//				edge->start[1] = right_y;
-//			}	
-//			return true;
-//		}
-//	}
-//	else if (left_edge == Edge::RIGHT)
-//	{
-//		if (right_edge == Edge::RIGHT)
-//		{
-//			if (left_x < edge->start[0] || left_x > edge->end[0])
-//				return false;
-//
-//			if (left_y < edge->start[1] || left_y > edge->end[1])
-//				return false;
-//
-//			if (left.Point_Side(edge->start[0], edge->start[1]) == Edge::LEFT && right.Point_Side(edge->start[0], edge->start[1]) == Edge::RIGHT)
-//			{
-//				edge->end[0] = left_x;
-//				edge->end[1] = left_y;
-//			}
-//			else if (left.Point_Side(edge->end[0], edge->end[1]) == Edge::LEFT && right.Point_Side(edge->end[0], edge->end[1]) == Edge::RIGHT)
-//			{
-//				edge->start[0] = left_x;
-//				edge->start[1] = left_y;
-//			}
-//
-//			/*if (fminf(left_x, right_x) < edge->start[0])
-//			{
-//				edge->start[0] = left_x;
-//				edge->start[1] = left_y;
-//			}
-//			else if (fminf(left_x, right_x) > edge->start[0])
-//			{
-//				edge->end[0] = left_x;
-//				edge->end[1] = left_y;
-//			}
-//
-//			if (fminf(left_y, right_y) < edge->start[0])
-//			{
-//				edge->start[0] = left_x;
-//				edge->start[1] = left_y;
-//			}
-//			else if (fminf(left_y, right_y) > edge->start[0])
-//			{
-//				edge->end[0] = left_x;
-//				edge->end[1] = left_y;
-//			}*/
-//			return true;
-//		}
-//	}
-//
-//	return false;
-//}
-
 void Maze::
-Draw_Cell(Cell* cell, LineSeg left, LineSeg right) 
+Draw_Cell(Cell* cell, LineSeg left, LineSeg right)
 {
 	cell->bFootPrint = true;
-	LineSeg front(right.end[0], right.end[1], left.start[0], left.start[1]);
-	for (int i = 0; i < 4; i++) 
+
+	for (int i = 0; i < 4; ++i)
 	{
-		LineSeg edge_line(cell->edges[i]);
-		float* start = new float[4]{ edge_line.start[1], 1.0f, edge_line.start[0], 1.0f };
-		float* end = new float[4]{ edge_line.end[1], 1.0f, edge_line.end[0], 1.0f };
-
-		start = Multiplication(ViewMatrix, start);
-		end = Multiplication(ViewMatrix, end);
-
-		if (!Clip(left, start, end) || !Clip(right, start, end)) 
-			continue;
-		edge_line.start[0] = start[0];
-		edge_line.start[1] = start[2];
-		edge_line.end[0] = end[0];
-		edge_line.end[1] = end[2];
-
-		if (cell->edges[i]->opaque) 
+		if (cell->edges[i]->opaque)
 		{
-			if (!Clip(front, start, end)) 
-				continue;
-			start = Multiplication(ProjectionMatrix, start);
-			end = Multiplication(ProjectionMatrix, end);
+			LineSeg* E = new LineSeg(cell->edges[i]);
+			if (!Clip(E, left, right))
+				continue;/**/
 
-			if (start[3] < zNear && end[3] < zNear) 
-				continue;
-			
-			start = Normalize(start);
-			end = Normalize(end);
+			float* edge0 = new float[4]{ E->start[1], 1.0f, E->start[0], 1.0f };
+			float* edge1 = new float[4]{ E->end[1], 1.0f, E->end[0], 1.0f };
+			float* edge2 = new float[4]{ E->end[1], -1.0f, E->end[0], 1.0f };
+			float* edge3 = new float[4]{ E->start[1], -1.0f, E->start[0], 1.0f };
+
+			edge0 = Multiplication(ViewMatrix, edge0);
+			edge1 = Multiplication(ViewMatrix, edge1);
+			edge2 = Multiplication(ViewMatrix, edge2);
+			edge3 = Multiplication(ViewMatrix, edge3);
+
+			edge0 = Multiplication(ProjectionMatrix, edge0);
+			edge1 = Multiplication(ProjectionMatrix, edge1);
+			edge2 = Multiplication(ProjectionMatrix, edge2);
+			edge3 = Multiplication(ProjectionMatrix, edge3);
+
+			edge0 = Normalize(edge0);
+			edge1 = Normalize(edge1);
+			edge2 = Normalize(edge2);
+			edge3 = Normalize(edge3);
+
+			/*if (edge0[3] < 0)
+				continue;*/
 
 			glBegin(GL_POLYGON);
 			glColor3fv(cell->edges[i]->color);
-			glVertex2f(start[0], start[1]);
-			glVertex2f(end[0], end[1]);
-			glVertex2f(end[0], -end[1]);
-			glVertex2f(start[0], -start[1]);
+			glVertex2fv(edge0);
+			glVertex2fv(edge1);
+			glVertex2fv(edge2);
+			glVertex2fv(edge3);
 			glEnd();
 		}
 		else
 		{
-			if (cell->edges[i]->Neighbor(cell) == NULL) 
+			if (cell->edges[i]->Neighbor(cell) == NULL)
 				continue;
-			float Lx, Rx, Ly, Ry;
-			LineSeg midline(0.0f, 0.0f, (edge_line.start[0] + edge_line.end[0]) * 0.5, (edge_line.start[1] + edge_line.end[1]) * 0.5);
-			if (midline.Point_Side(edge_line.start[0], edge_line.start[1]) == Edge::LEFT && midline.Point_Side(edge_line.end[0], edge_line.end[1]) == Edge::RIGHT) 
-			{
-				Lx = edge_line.start[0];
-				Ly = edge_line.start[1];
-				Rx = edge_line.end[0];
-				Ry = edge_line.end[1];
-			}
-			else if (midline.Point_Side(edge_line.start[0], edge_line.start[1]) == Edge::RIGHT && midline.Point_Side(edge_line.end[0], edge_line.end[1]) == Edge::LEFT) 
-			{
-				Lx = edge_line.end[0];
-				Ly = edge_line.end[1];
-				Rx = edge_line.start[0];
-				Ry = edge_line.start[1];
-			}
-			LineSeg newL(Lx, Ly, Lx / Ly * -zFar, -zFar);
-			LineSeg newR(Rx / Ry * -zFar, -zFar, Rx, Ry);
 
-			if (!cell->edges[i]->Neighbor(cell)->bFootPrint && fabs((Lx / Ly * -zFar) - (Rx / Ry * -zFar)) > 0.00001) 
-				Draw_Cell(cell->edges[i]->Neighbor(cell), newL, newR);
+			if (!(cell->edges[i]->Neighbor(cell)->bFootPrint))
+			{
+				LineSeg* E = new LineSeg(cell->edges[i]);
+
+				if (!Clip(E, left, right))
+					continue;
+
+				LineSeg new_left(left.start[0], left.start[1], E->end[0], E->end[1]);
+				LineSeg new_right(right.start[0], right.start[1], E->start[0], E->start[1]);
+
+				Draw_Cell(cell->edges[i]->Neighbor(cell), new_left, new_right);
+			}
 		}
 	}
 }
 
 bool Maze::
-Clip(LineSeg wall, float* start, float* end)
-{
-	char startSide = wall.Point_Side(start[0], start[2]);	// the side of the start point of frustum edge compare to edge
-	char endSide = wall.Point_Side(end[0], end[2]); // the side of the end point of frustum edge compare to edge
+Clip(LineSeg* edge, LineSeg left, LineSeg right)
+{	
+	float distance_x = (float)edge->end[0] - (float)edge->start[0];
+	float distance_y = (float)edge->end[1] - (float)edge->start[1];
+	float left_x, left_y, right_x, right_y ,s;
 
-	if (startSide == Edge::RIGHT) 
+	s = edge->Cross_Param(left);
+	left_x = edge->start[0] + distance_x * s;
+	left_y = edge->start[1] + distance_y * s;
+
+	s = edge->Cross_Param(right);
+	right_x = edge->start[0] + distance_x * s;
+	right_y = edge->start[1] + distance_y * s;
+
+	char left_edge = left.Point_Side(right_x, right_y);
+	char right_edge = right.Point_Side(left_x, left_y);
+
+	if (left_edge == LineSeg::LEFT)
 	{
-		if (endSide == Edge::LEFT) 
+		if (right_edge == LineSeg::RIGHT)
 		{
-			float percent = wall.Cross_Param(LineSeg(start[0], start[2], end[0], end[2]));
+			if (fminf(left_x, right_x) > edge->end[0] || fmaxf(left_x, right_x) < edge->start[0])
+				return false;
 
-			end[0] = wall.start[0] + (wall.end[0] - wall.start[0]) * percent;
-			end[2] = wall.start[1] + (wall.end[1] - wall.start[1]) * percent;
+			else if (fminf(left_y, right_y) > edge->end[1] || fmaxf(left_y, right_y) < edge->start[1])
+				return false;
+
+			if (fminf(left_x, right_x) > edge->start[0])
+				edge->start[0] = fminf(left_x, right_x);
+
+			if (fmaxf(left_x, right_x) < edge->end[0])
+				edge->end[0] = fmaxf(left_x, right_x);
+
+			if (fminf(left_y, right_y) > edge->start[1])
+				edge->start[1] = fminf(left_y, right_y);
+
+			if (fmaxf(left_y, right_y) < edge->end[1])
+				edge->end[1] = fmaxf(left_y, right_y);
+
+			return true;
+		}
+
+		if (right_edge == Edge::LEFT)
+		{
+			/*if (right_x < edge->start[0] || right_x > edge->end[0])
+				return false;
+
+			if (right_y < edge->start[1] || right_y > edge->end[1])
+				return false;*/
+
+			if (left.Point_Side(edge->start[0], edge->start[1]) == Edge::LEFT && right.Point_Side(edge->start[0], edge->start[1]) == Edge::RIGHT)
+			{
+				edge->end[0] = right_x;
+				edge->end[1] = right_y;
+
+				return true;
+			}
+			else if (left.Point_Side(edge->end[0], edge->end[1]) == Edge::LEFT && right.Point_Side(edge->end[0], edge->end[1]) == Edge::RIGHT)
+			{
+				edge->start[0] = right_x;
+				edge->start[1] = right_y;
+				return true;
+			}	
 		}
 	}
-	else if (endSide == Edge::RIGHT) 
+	else if (left_edge == Edge::RIGHT)
 	{
-		float percent = wall.Cross_Param(LineSeg(start[0], start[2], end[0], end[2]));
-		start[0] = wall.start[0] + (wall.end[0] - wall.start[0]) * percent;
-		start[2] = wall.start[1] + (wall.end[1] - wall.start[1]) * percent;
-	}
-	else 
-		return false;
+		if (right_edge == Edge::RIGHT)
+		{
+			if (left_x < edge->start[0] || left_x > edge->end[0])
+				return false;
 
-	return true;
+			if (left_y < edge->start[1] || left_y > edge->end[1])
+				return false;
+
+			if (left.Point_Side(edge->start[0], edge->start[1]) == Edge::LEFT && right.Point_Side(edge->start[0], edge->start[1]) == Edge::RIGHT)
+			{
+				edge->end[0] = left_x;
+				edge->end[1] = left_y;
+
+				return true;
+			}
+			else if (left.Point_Side(edge->end[0], edge->end[1]) == Edge::LEFT && right.Point_Side(edge->end[0], edge->end[1]) == Edge::RIGHT)
+			{
+				edge->start[0] = left_x;
+				edge->start[1] = left_y;
+
+				return true;
+			}			
+		}
+
+		if (right_edge == Edge::LEFT)
+		{
+			if (left.Point_Side(edge->start[0], edge->start[1]) == Edge::LEFT && right.Point_Side(edge->start[0], edge->start[1]) == Edge::RIGHT)
+			{
+				edge->end[0] = left_x;
+				edge->end[1] = left_y;
+
+				return true;
+			}
+			else if (left.Point_Side(edge->end[0], edge->end[1]) == Edge::LEFT && right.Point_Side(edge->end[0], edge->end[1]) == Edge::RIGHT)
+			{
+				edge->start[0] = left_x;
+				edge->start[1] = left_y;
+
+				return true;
+			}
+			else if (left.Point_Side(edge->start[0], edge->start[1]) == Edge::ON && right.Point_Side(edge->start[0], edge->start[1]) == Edge::RIGHT)
+			{
+				edge->end[0] = left_x;
+				edge->end[1] = left_y;
+
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
+
+//void Maze::
+//Draw_Cell(Cell* cell, LineSeg left, LineSeg right) 
+//{
+//	cell->bFootPrint = true;
+//	LineSeg front(right.end[0], right.end[1], left.start[0], left.start[1]);
+//	for (int i = 0; i < 4; i++) 
+//	{
+//		LineSeg edge_line(cell->edges[i]);
+//		float* start = new float[4]{ edge_line.start[1], 1.0f, edge_line.start[0], 1.0f };
+//		float* end = new float[4]{ edge_line.end[1], 1.0f, edge_line.end[0], 1.0f };
+//
+//		start = Multiplication(ViewMatrix, start);
+//		end = Multiplication(ViewMatrix, end);
+//
+//		if (!Clip(left, start, end) || !Clip(right, start, end)) 
+//			continue;
+//		edge_line.start[0] = start[0];
+//		edge_line.start[1] = start[2];
+//		edge_line.end[0] = end[0];
+//		edge_line.end[1] = end[2];
+//
+//		if (cell->edges[i]->opaque) 
+//		{
+//			if (!Clip(front, start, end)) 
+//				continue;
+//			start = Multiplication(ProjectionMatrix, start);
+//			end = Multiplication(ProjectionMatrix, end);
+//
+//			if (start[3] < zNear && end[3] < zNear) 
+//				continue;
+//			
+//			start = Normalize(start);
+//			end = Normalize(end);
+//
+//			glBegin(GL_POLYGON);
+//			glColor3fv(cell->edges[i]->color);
+//			glVertex2f(start[0], start[1]);
+//			glVertex2f(end[0], end[1]);
+//			glVertex2f(end[0], -end[1]);
+//			glVertex2f(start[0], -start[1]);
+//			glEnd();
+//		}
+//		else
+//		{
+//			if (cell->edges[i]->Neighbor(cell) == NULL) 
+//				continue;
+//			float Lx, Rx, Ly, Ry;
+//			LineSeg midline(0.0f, 0.0f, (edge_line.start[0] + edge_line.end[0]) * 0.5, (edge_line.start[1] + edge_line.end[1]) * 0.5);
+//			if (midline.Point_Side(edge_line.start[0], edge_line.start[1]) == Edge::LEFT && midline.Point_Side(edge_line.end[0], edge_line.end[1]) == Edge::RIGHT) 
+//			{
+//				Lx = edge_line.start[0];
+//				Ly = edge_line.start[1];
+//				Rx = edge_line.end[0];
+//				Ry = edge_line.end[1];
+//			}
+//			else if (midline.Point_Side(edge_line.start[0], edge_line.start[1]) == Edge::RIGHT && midline.Point_Side(edge_line.end[0], edge_line.end[1]) == Edge::LEFT) 
+//			{
+//				Lx = edge_line.end[0];
+//				Ly = edge_line.end[1];
+//				Rx = edge_line.start[0];
+//				Ry = edge_line.start[1];
+//			}
+//			LineSeg newL(Lx, Ly, Lx / Ly * -zFar, -zFar);
+//			LineSeg newR(Rx / Ry * -zFar, -zFar, Rx, Ry);
+//
+//			if (!cell->edges[i]->Neighbor(cell)->bFootPrint && fabs((Lx / Ly * -zFar) - (Rx / Ry * -zFar)) > 0.00001) 
+//				Draw_Cell(cell->edges[i]->Neighbor(cell), newL, newR);
+//		}
+//	}
+//}
+
+//bool Maze::
+//Clip(LineSeg wall, float* start, float* end)
+//{
+//	char startSide = wall.Point_Side(start[0], start[2]);	// the side of the start point of frustum edge compare to edge
+//	char endSide = wall.Point_Side(end[0], end[2]); // the side of the end point of frustum edge compare to edge
+//
+//	if (startSide == Edge::RIGHT) 
+//	{
+//		if (endSide == Edge::LEFT) 
+//		{
+//			float percent = wall.Cross_Param(LineSeg(start[0], start[2], end[0], end[2]));
+//
+//			end[0] = wall.start[0] + (wall.end[0] - wall.start[0]) * percent;
+//			end[2] = wall.start[1] + (wall.end[1] - wall.start[1]) * percent;
+//		}
+//	}
+//	else if (endSide == Edge::RIGHT) 
+//	{
+//		float percent = wall.Cross_Param(LineSeg(start[0], start[2], end[0], end[2]));
+//		start[0] = wall.start[0] + (wall.end[0] - wall.start[0]) * percent;
+//		start[2] = wall.start[1] + (wall.end[1] - wall.start[1]) * percent;
+//	}
+//	else 
+//		return false;
+//
+//	return true;
+//}
 
 //**********************************************************************
 //
